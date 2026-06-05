@@ -1,8 +1,9 @@
-streamlit
+gradio>=5.0.0
 torch
 diffusers
 transformers
 accelerate
 safetensors
-invisible-watermark
 Pillow
+invisible-watermark
+sentencepiece
