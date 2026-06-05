@@ -1,34 +1,30 @@
-# AI Image Generator using Stable Diffusion XL
+# AI Image Generator using Streamlit & SDXL Turbo
 
-Generate high-quality AI images from text prompts using Stable Diffusion XL.
+A simple AI-powered image generation application built with:
+
+* Streamlit
+* Hugging Face Diffusers
+* Stable Diffusion XL Turbo
+* PyTorch
 
 ## Features
 
-* Text to Image Generation
-* Adjustable Guidance Scale
-* Adjustable Inference Steps
-* Gradio Interface
-* Hugging Face Spaces Deployment
-
-## Tech Stack
-
-* Python
-* Gradio
-* Hugging Face Diffusers
-* Stable Diffusion XL
-* PyTorch
+* Text-to-Image Generation
+* Fast SDXL Turbo Inference
+* Download Generated Images
+* Responsive UI
 
 ## Installation
 
 pip install -r requirements.txt
 
-## Run Locally
+## Run
 
-python app.py
+streamlit run app.py
 
-## Example Prompt
+## Deploy
 
-A futuristic city at sunset, ultra realistic, cinematic lighting
+Deploy on Hugging Face Spaces using Docker.
 
 ## Author
 
