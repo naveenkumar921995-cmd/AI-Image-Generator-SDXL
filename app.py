@@ -1,54 +1,70 @@
-import streamlit as st
-from diffusers import DiffusionPipeline
 import torch
+import gradio as gr
+from diffusers import DiffusionPipeline
 
-st.set_page_config(
-    page_title="AI Image Generator",
-    layout="wide"
+MODEL_ID = "stabilityai/stable-diffusion-xl-base-1.0"
+
+print("Loading model...")
+
+pipe = DiffusionPipeline.from_pretrained(
+    MODEL_ID,
+    torch_dtype=torch.float16,
+    use_safetensors=True,
+    variant="fp16"
 )
 
-st.title("AI Image Generator")
-st.write("Generate Images using Stable Diffusion XL")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+pipe = pipe.to(device)
 
-@st.cache_resource
-def load_model():
+print("Model loaded successfully")
 
-    pipe = DiffusionPipeline.from_pretrained(
-        "stabilityai/stable-diffusion-xl-base-1.0",
-        torch_dtype=torch.float16,
-        use_safetensors=True,
-        variant="fp16"
-    )
 
-    pipe.to("cuda")
+def generate_image(
+    prompt,
+    negative_prompt,
+    steps,
+    guidance_scale
+):
 
-    return pipe
+    image = pipe(
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+        num_inference_steps=steps,
+        guidance_scale=guidance_scale
+    ).images[0]
 
-pipe = load_model()
+    return image
 
-prompt = st.text_area(
-    "Enter Prompt",
-    height=120
+
+demo = gr.Interface(
+    fn=generate_image,
+    inputs=[
+        gr.Textbox(
+            label="Prompt",
+            placeholder="A dog wearing black sunglasses sitting on a beach"
+        ),
+        gr.Textbox(
+            label="Negative Prompt",
+            value="blurry, low quality"
+        ),
+        gr.Slider(
+            minimum=10,
+            maximum=50,
+            value=30,
+            step=1,
+            label="Inference Steps"
+        ),
+        gr.Slider(
+            minimum=1,
+            maximum=15,
+            value=7.5,
+            step=0.5,
+            label="Guidance Scale"
+        )
+    ],
+    outputs=gr.Image(label="Generated Image"),
+    title="AI Image Generator",
+    description="Generate images using Stable Diffusion XL"
 )
 
-if st.button("Generate Image"):
-
-    with st.spinner("Generating..."):
-
-        image = pipe(
-            prompt=prompt,
-            num_inference_steps=30,
-            guidance_scale=7.5
-        ).images[0]
-
-        st.image(image)
-
-        image.save("generated.png")
-
-        with open("generated.png", "rb") as file:
-            st.download_button(
-                label="Download Image",
-                data=file,
-                file_name="generated.png",
-                mime="image/png"
-            )
+demo.launch()
